@@ -46,7 +46,7 @@ function getGoogleSheetsCsvUrl(sheetId) {
 }
 
 function validateAccessCode(code) {
-  return analysisData.accessCodes[code] || null;
+  return analysisData && analysisData.accessCodes[code] || null;
 }
 
 function getVisibilityLevel(score) {
