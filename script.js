@@ -2,8 +2,6 @@
 const CONFIG = {
   SHEET_ID: '1gwe5oyDjs_u_qbLbRkjF3cCvLAm1dUO_fG0agUAjfjU',
   TRACKING_SHEET_ID: '13d0sO0isKMQWP5rkkLxhbzpgIVGrd1pARzFLfACMDE0',
-  ACCESS_CODES_SHEET_ID: 'YOUR_ACCESS_CODES_SHEET_ID', // Replace with your access codes sheet ID
-  ACCESS_CODES: {}, // Access codes will be loaded dynamically
   TRACKING_SCRIPT_URL:
     'https://script.google.com/macros/s/AKfycbxxP4Zd-7oozh9EUBSEo5uIf620NYN2bgw3KI9mU5Jx-j9kEC5b2DGI_vILRS6Ae20h/exec',
 };
@@ -48,7 +46,7 @@ function getGoogleSheetsCsvUrl(sheetId) {
 }
 
 function validateAccessCode(code) {
-  return CONFIG.ACCESS_CODES[code] || null;
+  return analysisData.accessCodes[code] || null;
 }
 
 function getVisibilityLevel(score) {
@@ -108,6 +106,7 @@ function parseCSV(csvContent) {
   const headers = lines[0].split(',').map((h) => h.trim().replace(/"/g, ''));
 
   const companies = [];
+  const accessCodes = {};
 
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(',').map((v) => v.trim().replace(/"/g, ''));
@@ -135,9 +134,9 @@ function parseCSV(csvContent) {
 
     companies.push(company);
 
-    // Stocker le code d'accès dans CONFIG.ACCESS_CODES
+    // Stocker le code d'accès dans accessCodes
     if (company.accessCode) {
-      CONFIG.ACCESS_CODES[company.accessCode] = {
+      accessCodes[company.accessCode] = {
         companyName: company.name,
         rowIndex: i,
       };
@@ -160,7 +159,7 @@ function parseCSV(csvContent) {
     );
   });
 
-  return { companies, averages, globalAverage };
+  return { companies, averages, globalAverage, accessCodes };
 }
 
 async function trackUserAccess(userInfo, accessCode) {
@@ -576,7 +575,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   try {
     const { analysisData: csvData } = await fetchGoogleSheetsData();
     analysisData = parseCSV(csvData);
-    console.log('Access codes loaded:', CONFIG.ACCESS_CODES);
+    console.log('Access codes loaded:', analysisData.accessCodes);
   } catch (error) {
     console.error('Failed to load access codes:', error);
     alert(
