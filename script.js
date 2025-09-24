@@ -124,7 +124,7 @@ function parseCSV(csvContent) {
       youtube: normalizeBoolean(values[7] || ''),
       tripadvisor: normalizeBoolean(values[8] || ''),
       score: 0,
-      accessCode: values[9] || '', // Récupérer le code d'accès
+      accessCode: values[9] ? values[9].trim() : '', // Récupérer le code d'accès et supprimer les espaces
     };
 
     // Calculer le score
